@@ -2,77 +2,60 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Sistem Input Arsip Nota</title>
+    <title>Sistem Arsip Nota - Smart Grid</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; }
-        .paper-preview { width: 210mm; min-height: 297mm; background: white; box-shadow: 0 10px 25px rgba(0,0,0,0.1); margin: 20px auto; padding: 20mm; border-radius: 4px; }
-        .img-container { border: 1px solid #e2e8f0; padding: 10px; background: #fafafa; display: inline-block; }
+        .paper-preview { width: 210mm; min-height: 297mm; background: white; box-shadow: 0 10px 25px rgba(0,0,0,0.1); margin: 20px auto; padding: 15mm; position: relative; }
+        .grid-nota { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 20px; }
+        .nota-box { border: 1px solid #e2e8f0; padding: 5px; text-align: center; background: #f8fafc; }
     </style>
 </head>
 <body class="p-6">
 
     <div class="max-w-5xl mx-auto">
-        <div class="flex items-center gap-2 mb-1">
-            <div class="bg-blue-600 p-1.5 rounded shadow-lg">
-                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-            </div>
-            <h1 class="text-xl font-bold text-slate-800 tracking-tight">Sistem Input Arsip Nota</h1>
-        </div>
-        <p class="text-slate-500 mb-6 text-sm">Otomasi perapian ukuran nota ke format PDF A4.</p>
-
-        <div class="bg-white border border-slate-200 rounded-xl p-6 mb-8 shadow-sm">
+        <div class="bg-white border border-slate-200 rounded-xl p-6 mb-6 shadow-sm">
+            <h1 class="text-xl font-bold text-blue-900 mb-4 flex items-center gap-2">
+                📂 Sistem Input Arsip Nota (Auto-Grid)
+            </h1>
             <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
                 <div class="md:col-span-5">
-                    <label class="block text-[11px] uppercase tracking-wider font-bold text-slate-500 mb-1.5">Keterangan / Judul Jurnal</label>
-                    <input type="text" id="inputKeterangan" placeholder="Cth: Pembelian ATK..." class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all">
+                    <label class="block text-xs font-bold text-slate-500 mb-1">KETERANGAN JURNAL</label>
+                    <input type="text" id="inputKeterangan" placeholder="Cth: Bensin, Parkir..." class="w-full p-2 bg-slate-50 border rounded-lg outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
                 <div class="md:col-span-5">
-                    <label class="block text-[11px] uppercase tracking-wider font-bold text-slate-500 mb-1.5">Upload Foto Nota</label>
-                    <input type="file" id="inputFoto" accept="image/*" class="w-full p-2 bg-slate-50 border border-slate-300 rounded-lg text-sm">
+                    <label class="block text-xs font-bold text-slate-500 mb-1">FOTO NOTA</label>
+                    <input type="file" id="inputFoto" accept="image/*" class="w-full p-1.5 bg-slate-50 border rounded-lg text-sm">
                 </div>
                 <div class="md:col-span-2">
-                    <button onclick="tambahItem()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-lg transition-all shadow-md active:scale-95 flex items-center justify-center gap-2">
-                        <span class="text-lg">+</span> Tambah
-                    </button>
+                    <button onclick="tambahItem()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded-lg transition">Tambah</button>
                 </div>
             </div>
         </div>
 
-        <div class="flex flex-wrap items-end justify-between gap-4 mb-6 bg-slate-200/50 p-4 rounded-lg">
+        <div class="flex justify-between items-center mb-6 bg-slate-800 p-4 rounded-lg text-white">
             <div class="flex gap-4">
-                <div>
-                    <label class="block text-[10px] font-bold text-slate-600 mb-1">JUDUL LAPORAN</label>
-                    <input type="text" id="judulLaporan" value="Laporan Arsip Nota & Jurnal" oninput="updatePreview()" class="p-2 border border-slate-300 rounded text-sm w-64 shadow-sm">
-                </div>
-                <div>
-                    <label class="block text-[10px] font-bold text-slate-600 mb-1">TANGGAL</label>
-                    <input type="date" id="tglLaporan" oninput="updatePreview()" class="p-2 border border-slate-300 rounded text-sm shadow-sm">
-                </div>
+                <input type="text" id="judulLaporan" value="Laporan Arsip Nota & Jurnal" oninput="updatePreview()" class="bg-slate-700 p-2 rounded text-sm w-64 border-none">
+                <input type="date" id="tglLaporan" oninput="updatePreview()" class="bg-slate-700 p-2 rounded text-sm border-none">
             </div>
-            <button onclick="downloadPDF()" class="bg-slate-800 hover:bg-black text-white px-8 py-2.5 rounded-lg font-bold flex items-center gap-2 transition shadow-lg active:scale-95">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-                Print / Save PDF
-            </button>
+            <button onclick="downloadPDF()" class="bg-green-600 hover:bg-green-700 px-6 py-2 rounded font-bold shadow-lg transition">Simpan PDF A4</button>
         </div>
 
         <div id="previewContainer" class="paper-preview">
-            <div class="flex justify-between items-start border-b-4 border-slate-800 pb-3 mb-8">
+            <div class="flex justify-between items-start border-b-2 border-slate-900 pb-2 mb-4">
                 <div>
-                    <h2 id="viewJudul" class="text-2xl font-black text-slate-900 tracking-tighter uppercase">LAPORAN ARSIP NOTA & JURNAL</h2>
-                    <p class="text-slate-500 text-[11px] font-medium italic">Departemen Finance & Accounting</p>
+                    <h2 id="viewJudul" class="text-xl font-bold uppercase">LAPORAN ARSIP NOTA & JURNAL</h2>
+                    <p class="text-[10px] text-slate-500 italic">Finance Dept Archive</p>
                 </div>
-                <div class="text-right">
-                    <p class="text-xs font-bold text-slate-700">Tanggal: <span id="viewTgl" class="font-medium">-</span></p>
-                    <p class="text-[9px] text-slate-400 mt-1 uppercase tracking-widest">Digital Archive System</p>
+                <div class="text-right text-[10px]">
+                    <p class="font-bold">Tanggal: <span id="viewTgl" class="font-normal">-</span></p>
                 </div>
             </div>
-
-            <div id="listNota" class="min-h-[200px] border-2 border-dashed border-slate-200 rounded-xl flex items-center justify-center text-slate-400 italic text-sm">
-                Belum ada data arsip. Silahkan input di panel atas.
-            </div>
+            
+            <div id="gridArea" class="grid-nota">
+                </div>
         </div>
     </div>
 
@@ -83,21 +66,25 @@
         function updatePreview() {
             document.getElementById('viewJudul').innerText = document.getElementById('judulLaporan').value;
             const tgl = new Date(document.getElementById('tglLaporan').value);
-            const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
-            document.getElementById('viewTgl').innerText = tgl.toLocaleDateString('id-ID', options);
+            document.getElementById('viewTgl').innerText = tgl.toLocaleDateString('id-ID', {day:'numeric', month:'long', year:'numeric'});
         }
 
         function tambahItem() {
             const ket = document.getElementById('inputKeterangan').value;
             const file = document.getElementById('inputFoto').files[0];
-            if(!ket || !file) return alert("Mohon lengkapi data!");
+            if(!ket || !file) return alert("Lengkapi data!");
 
             const reader = new FileReader();
             reader.onload = function(e) {
                 const img = new Image();
                 img.onload = function() {
-                    dataArsip.push({ keterangan: ket, foto: e.target.result, w: img.width, h: img.height });
-                    renderList();
+                    const aspect = img.width / img.height;
+                    // Kategori: Jika aspect ratio > 1.2 (Sangat lebar/Lansekap), dianggap persegi panjang.
+                    // Jika mendekati 1 (0.8 - 1.2), dianggap persegi.
+                    const tipe = (aspect > 1.2) ? 'panjang' : 'persegi';
+                    
+                    dataArsip.push({ keterangan: ket, foto: e.target.result, tipe: tipe, w: img.width, h: img.height });
+                    renderPreview();
                     document.getElementById('inputKeterangan').value = "";
                     document.getElementById('inputFoto').value = "";
                 };
@@ -106,37 +93,23 @@
             reader.readAsDataURL(file);
         }
 
-        function renderList() {
-            const container = document.getElementById('listNota');
+        function renderPreview() {
+            const container = document.getElementById('gridArea');
             container.innerHTML = "";
-            container.className = "space-y-10";
-            
             dataArsip.forEach((item, index) => {
-                const div = document.createElement('div');
-                div.className = "relative group border-l-4 border-blue-500 pl-6 py-2";
-                
-                // Menghitung rasio untuk preview di layar agar tidak kebesaran
-                const ratio = item.h / item.w;
-                const displayWidth = 350; // fixed display width in preview
-                const displayHeight = displayWidth * ratio;
-
-                div.innerHTML = `
-                    <div class="flex justify-between items-center mb-3">
-                        <p class="font-bold text-sm text-slate-700 uppercase tracking-wide">#${index+1} | ${item.keterangan}</p>
-                        <button onclick="hapusItem(${index})" class="text-red-500 text-xs font-bold hover:underline opacity-0 group-hover:opacity-100 transition">Hapus</button>
-                    </div>
-                    <div class="img-container shadow-sm">
-                        <img src="${item.foto}" style="width:${displayWidth}px; height:${displayHeight}px; object-fit:contain;">
-                    </div>
+                const box = document.createElement('div');
+                box.className = "nota-box p-2 border relative group";
+                box.innerHTML = `
+                    <p class="text-[9px] font-bold mb-1 truncate text-blue-700">${item.keterangan}</p>
+                    <img src="${item.foto}" class="mx-auto h-24 object-contain mb-1">
+                    <span class="text-[8px] bg-gray-200 px-1 rounded">${item.tipe === 'panjang' ? '4/Page' : '6/Page'}</span>
+                    <button onclick="hapus(${index})" class="absolute top-0 right-0 bg-red-500 text-white text-[8px] px-1 opacity-0 group-hover:opacity-100">X</button>
                 `;
-                container.appendChild(div);
+                container.appendChild(box);
             });
         }
 
-        function hapusItem(index) {
-            dataArsip.splice(index, 1);
-            dataArsip.length === 0 ? location.reload() : renderList();
-        }
+        function hapus(index) { dataArsip.splice(index, 1); renderPreview(); }
 
         async function downloadPDF() {
             const { jsPDF } = window.jspdf;
@@ -144,46 +117,53 @@
             const judul = document.getElementById('judulLaporan').value;
             const tgl = document.getElementById('viewTgl').innerText;
 
-            dataArsip.forEach((item, i) => {
-                if (i > 0) doc.addPage();
-                
-                // Header PDF
-                doc.setFontSize(18);
-                doc.setFont("helvetica", "bold");
-                doc.text(judul.toUpperCase(), 105, 20, { align: 'center' });
-                doc.setFontSize(10);
-                doc.setFont("helvetica", "normal");
-                doc.text(`Tanggal: ${tgl}`, 105, 26, { align: 'center' });
-                doc.line(20, 30, 190, 30);
+            let xPos = [15, 110]; // 2 Kolom
+            let currentY = 40;
+            let itemsInPage = 0;
 
-                // Keterangan
-                doc.setFontSize(11);
-                doc.setFont("helvetica", "bold");
-                doc.text(`Lampiran #${i+1}: ${item.keterangan}`, 20, 40);
-                
-                // Logika FIXED RATIO & MAX SIZE
-                const maxWidth = 140; // Batas lebar nota
-                const maxHeight = 180; // Batas tinggi nota
-                let finalW = maxWidth;
-                let finalH = (item.h * finalW) / item.w;
+            for (let i = 0; i < dataArsip.length; i++) {
+                const item = dataArsip[i];
+                const maxInPage = (item.tipe === 'panjang') ? 4 : 6;
+                const rowHeight = (item.tipe === 'panjang') ? 60 : 42;
 
-                if (finalH > maxHeight) {
-                    finalH = maxHeight;
-                    finalW = (item.w * finalH) / item.h;
+                // Header di halaman baru
+                if (itemsInPage === 0) {
+                    doc.setFontSize(14); doc.text(judul.toUpperCase(), 105, 15, {align:'center'});
+                    doc.setFontSize(9); doc.text(`Tanggal: ${tgl}`, 105, 20, {align:'center'});
+                    doc.line(15, 25, 195, 25);
                 }
 
-                // Gambar diletakkan di tengah (Center)
-                const xPos = (210 - finalW) / 2;
-                doc.addImage(item.foto, 'JPEG', xPos, 45, finalW, finalH);
-                
-                // Footer nomor halaman
-                doc.setFontSize(8);
-                doc.setTextColor(150);
-                doc.text(`Halaman ${i+1} dari ${dataArsip.length}`, 105, 285, { align: 'center' });
-            });
+                // Kalkulasi posisi Grid
+                let col = itemsInPage % 2;
+                let row = Math.floor(itemsInPage / 2);
+                let y = 35 + (row * (rowHeight + 10));
 
+                // Gambar & Label
+                doc.setFontSize(8);
+                doc.text(item.keterangan.substring(0, 30), xPos[col], y);
+                
+                let imgW = 85;
+                let imgH = (item.h * imgW) / item.w;
+                if(imgH > rowHeight) {
+                    imgH = rowHeight;
+                    imgW = (item.w * imgH) / item.h;
+                }
+
+                doc.addImage(item.foto, 'JPEG', xPos[col], y + 2, imgW, imgH);
+
+                itemsInPage++;
+                
+                // Cek jika halaman penuh
+                if (itemsInPage >= maxInPage || i === dataArsip.length - 1) {
+                    if (i < dataArsip.length - 1) {
+                        doc.addPage();
+                        itemsInPage = 0;
+                    }
+                }
+            }
             doc.save(`${judul}.pdf`);
         }
+
         updatePreview();
     </script>
 </body>
