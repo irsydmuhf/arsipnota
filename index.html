@@ -1,105 +1,150 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <title>Sistem Arsip Nota</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; }
-        .paper-preview { 
-            width: 210mm; 
-            min-height: 297mm; 
-            background: white; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
-            margin: 20px auto; 
-            padding: 10mm 10mm; /* Margin kertas diperkecil */
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f5f9;
         }
-        .pdf-header-line { border-bottom: 3px solid #1e293b; margin-top: 5px; margin-bottom: 15px; }
+
+        .paper-preview {
+            width: 210mm;
+            min-height: 297mm;
+            background: white;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin: 20px auto;
+            padding: 10mm;
+        }
+
+        .pdf-header-line {
+            border-bottom: 3px solid #1e293b;
+            margin-top: 5px;
+            margin-bottom: 15px;
+        }
     </style>
 </head>
+
 <body class="p-6">
 
     <div class="max-w-5xl mx-auto">
-        <div class="bg-white border border-slate-200 rounded-xl p-6 mb-6 shadow-sm">
-            <h1 class="text-xl font-bold text-blue-900 mb-4 flex items-center gap-2">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+
+        <!-- FORM INPUT -->
+        <div class="bg-white rounded-xl p-6 shadow mb-6">
+            <h1 class="text-xl font-bold text-blue-900 mb-4">
                 Sistem Input Arsip Nota
             </h1>
-            <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
-                <div class="md:col-span-5">
-                    <label class="block text-xs font-bold text-slate-500 mb-1 uppercase">Keterangan Jurnal</label>
-                    <input type="text" id="inputKeterangan" placeholder="Cth: Pembelian ATK..." class="w-full p-2 bg-slate-50 border rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+
+            <div class="grid grid-cols-12 gap-4">
+                <div class="col-span-5">
+                    <label class="text-xs font-bold text-slate-500">Keterangan</label>
+                    <input id="inputKeterangan" class="w-full p-2 border rounded bg-slate-50 text-sm">
                 </div>
-                <div class="md:col-span-5">
-                    <label class="block text-xs font-bold text-slate-500 mb-1 uppercase">Upload Foto Nota</label>
-                    <input type="file" id="inputFoto" accept="image/*" class="w-full p-1.5 bg-white border rounded-lg text-sm">
+                <div class="col-span-5">
+                    <label class="text-xs font-bold text-slate-500">Foto Nota</label>
+                    <input type="file" id="inputFoto" accept="image/*" class="w-full p-2 border rounded text-sm">
                 </div>
-                <div class="md:col-span-2">
-                    <button onclick="tambahItem()" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 rounded-lg transition shadow-sm">+ Tambah</button>
-                </div>
-            </div>
-            
-            <div class="flex gap-4 mt-6 border-t pt-4">
-                <div class="flex-1">
-                    <label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase">Judul Laporan</label>
-                    <input type="text" id="judulLaporan" value="Laporan Arsip Nota & Jurnal" oninput="updatePreview()" class="w-full p-2 border rounded-lg text-sm bg-slate-50">
-                </div>
-                <div>
-                    <label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase">Tanggal Laporan</label>
-                    <input type="date" id="tglLaporan" oninput="updatePreview()" class="p-2 border rounded-lg text-sm bg-slate-50">
-                </div>
-                <div class="flex items-end">
-                    <button onclick="downloadPDF()" class="bg-slate-900 hover:bg-black text-white px-6 py-2 rounded-lg font-bold flex items-center gap-2 transition shadow-md">
-                        Print / Save PDF (A4)
+                <div class="col-span-2 flex items-end">
+                    <button onclick="tambahItem()" class="w-full bg-blue-600 text-white rounded py-2 font-bold">
+                        + Tambah
                     </button>
                 </div>
             </div>
+
+            <div class="flex gap-4 mt-6 border-t pt-4">
+                <input id="judulLaporan" value="Laporan Arsip Nota & Jurnal" oninput="updatePreview()"
+                    class="flex-1 p-2 border rounded bg-slate-50 text-sm">
+                <input type="date" id="tglLaporan" oninput="updatePreview()"
+                    class="p-2 border rounded bg-slate-50 text-sm">
+                <button onclick="downloadPDF()" class="bg-slate-900 text-white px-6 rounded font-bold">
+                    Print / Save PDF
+                </button>
+            </div>
         </div>
 
-        <div id="previewContainer" class="paper-preview">
-            <div class="flex justify-between items-end px-2">
+        <!-- PREVIEW -->
+        <div class="paper-preview">
+            <div class="flex justify-between">
                 <div>
-                    <h2 id="viewJudul" class="text-2xl font-extrabold text-slate-800 tracking-tight leading-none uppercase">LAPORAN ARSIP NOTA & JURNAL</h2>
-                    <p class="text-slate-500 text-[11px] mt-1">Departemen Finance & Accounting</p>
+                    <h2 id="viewJudul" class="text-2xl font-extrabold uppercase">
+                        LAPORAN ARSIP NOTA & JURNAL
+                    </h2>
+                    <p class="text-xs text-slate-500">Departemen Finance & Accounting</p>
                 </div>
-                <div class="text-right">
-                    <p class="text-xs font-medium text-slate-700">Tanggal: <span id="viewTgl" class="font-normal text-slate-600">-</span></p>
-                    <p class="text-[9px] text-slate-400 uppercase tracking-widest leading-none">Digital Archive System</p>
+                <div class="text-right text-xs">
+                    <p>Tanggal: <span id="viewTgl">-</span></p>
+                    <p class="text-[10px] text-slate-400">DIGITAL ARCHIVE SYSTEM</p>
                 </div>
             </div>
-            <div class="pdf-header-line mx-2"></div>
-            
-            <div id="gridArea" class="grid grid-cols-2 gap-x-2 gap-y-2">
-                </div>
+
+            <div class="pdf-header-line"></div>
+
+            <div id="gridArea" class="grid grid-cols-2 gap-2"></div>
         </div>
     </div>
 
     <script>
+        const { jsPDF } = window.jspdf;
         let dataArsip = [];
-        document.getElementById('tglLaporan').valueAsDate = new Date();
+
+        document.getElementById("tglLaporan").valueAsDate = new Date();
+        updatePreview();
 
         function updatePreview() {
-            document.getElementById('viewJudul').innerText = document.getElementById('judulLaporan').value;
-            const tgl = new Date(document.getElementById('tglLaporan').value);
-            const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
-            document.getElementById('viewTgl').innerText = tgl.toLocaleDateString('id-ID', options);
+            viewJudul.innerText = judulLaporan.value;
+            const tgl = new Date(tglLaporan.value);
+            viewTgl.innerText = tgl.toLocaleDateString("id-ID", {
+                weekday: "long", day: "numeric", month: "long", year: "numeric"
+            });
+        }
+
+        /* ===============================
+           HIGH RES IMAGE PROCESSING
+        ================================ */
+        function imageToHighResBase64(src, scale = 2) {
+            return new Promise(resolve => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement("canvas");
+                    canvas.width = img.width * scale;
+                    canvas.height = img.height * scale;
+
+                    const ctx = canvas.getContext("2d");
+                    ctx.imageSmoothingEnabled = true;
+                    ctx.imageSmoothingQuality = "high";
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+                    resolve(canvas.toDataURL("image/jpeg", 1.0));
+                };
+                img.src = src;
+            });
         }
 
         function tambahItem() {
-            const ket = document.getElementById('inputKeterangan').value;
-            const file = document.getElementById('inputFoto').files[0];
-            if(!ket || !file) return alert("Lengkapi keterangan dan foto!");
+            const ket = inputKeterangan.value;
+            const file = inputFoto.files[0];
+            if (!ket || !file) return alert("Lengkapi data!");
 
             const reader = new FileReader();
-            reader.onload = function(e) {
+            reader.onload = e => {
                 const img = new Image();
-                img.onload = function() {
-                    dataArsip.push({ keterangan: ket, foto: e.target.result, w: img.width, h: img.height });
+                img.onload = () => {
+                    dataArsip.push({
+                        keterangan: ket,
+                        foto: e.target.result,
+                        w: img.width,
+                        h: img.height
+                    });
                     renderPreview();
-                    document.getElementById('inputKeterangan').value = "";
-                    document.getElementById('inputFoto').value = "";
+                    inputKeterangan.value = "";
+                    inputFoto.value = "";
                 };
                 img.src = e.target.result;
             };
@@ -107,96 +152,72 @@
         }
 
         function renderPreview() {
-            const container = document.getElementById('gridArea');
-            container.innerHTML = "";
-            
-            dataArsip.forEach((item, index) => {
-                const box = document.createElement('div');
-                box.className = "relative group border border-slate-100 p-1 rounded bg-white";
-                box.innerHTML = `
-                    <div class="flex justify-between items-center mb-1 px-1">
-                        <p class="text-[11px] font-bold text-blue-800 uppercase truncate">#${index+1}: ${item.keterangan}</p>
-                        <button onclick="hapus(${index})" class="text-red-500 text-[12px] font-bold leading-none">×</button>
-                    </div>
-                    <img src="${item.foto}" class="w-full h-48 object-contain bg-slate-50">
-                `;
-                container.appendChild(box);
+            gridArea.innerHTML = "";
+            dataArsip.forEach((d, i) => {
+                gridArea.innerHTML += `
+        <div class="border p-1 rounded">
+            <div class="flex justify-between text-xs font-bold text-blue-800">
+                <span>#${i + 1} ${d.keterangan}</span>
+                <button onclick="hapus(${i})" class="text-red-500">×</button>
+            </div>
+            <img src="${d.foto}" class="w-full h-48 object-contain bg-slate-50">
+        </div>`;
             });
         }
 
-        function hapus(index) { dataArsip.splice(index, 1); renderPreview(); }
+        function hapus(i) {
+            dataArsip.splice(i, 1);
+            renderPreview();
+        }
 
+        /* ===============================
+           PDF EXPORT (ANTI BLUR)
+        ================================ */
         async function downloadPDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF('p', 'mm', 'a4');
-            const judul = document.getElementById('judulLaporan').value;
-            const tglText = document.getElementById('viewTgl').innerText;
-
-            const maxInPage = 6;
-            let itemsInPage = 0;
+            const doc = new jsPDF("p", "mm", "a4");
+            const maxPerPage = 6;
+            let pos = 0;
 
             for (let i = 0; i < dataArsip.length; i++) {
-                const item = dataArsip[i];
-
-                if (itemsInPage === 0) {
-                    // Header PDF
-                    doc.setFontSize(18);
-                    doc.setFont("helvetica", "bold");
-                    doc.setTextColor(30, 41, 59);
-                    doc.text(judul.toUpperCase(), 12, 18);
-                    
-                    doc.setFontSize(9);
-                    doc.setFont("helvetica", "normal");
-                    doc.setTextColor(100);
+                if (pos === 0) {
+                    doc.setFontSize(18).setFont("helvetica", "bold");
+                    doc.text(judulLaporan.value.toUpperCase(), 12, 18);
+                    doc.setFontSize(9).setFont("helvetica", "normal");
                     doc.text("Departemen Finance & Accounting", 12, 23);
-                    
-                    doc.setTextColor(80);
-                    doc.text(`Tanggal: ${tglText}`, 198, 18, { align: 'right' });
-                    doc.setTextColor(180);
-                    doc.setFontSize(7);
-                    doc.text("DIGITAL ARCHIVE SYSTEM", 198, 21.5, { align: 'right' });
-                    
-                    doc.setDrawColor(30, 41, 59);
-                    doc.setLineWidth(0.8);
+                    doc.text(`Tanggal: ${viewTgl.innerText}`, 198, 18, { align: "right" });
                     doc.line(12, 26, 198, 26);
                 }
 
-                // Grid Logic (2 columns x 3 rows) - Jarak Dipersempit
-                let col = itemsInPage % 2;
-                let row = Math.floor(itemsInPage / 2);
-                
-                let x = col === 0 ? 12 : 108; // X position diperlebar ke samping
-                let yStart = 32 + (row * 82); // Y Spacing vertikal dipersempit agar gambar lebih tinggi
+                const col = pos % 2;
+                const row = Math.floor(pos / 2);
+                const x = col === 0 ? 12 : 108;
+                const y = 32 + row * 82;
 
-                // Label Nota
-                doc.setFontSize(8);
-                doc.setFont("helvetica", "bold");
-                doc.setTextColor(0, 51, 153);
-                doc.text(`${i+1}. ${item.keterangan.toUpperCase()}`, x, yStart);
-                
-                // Dimensi Gambar (Ditingkatkan)
-                const maxWidth = 90; // Lebar lebih besar
-                const maxHeight = 76; // Tinggi lebih besar
-                let imgW = maxWidth;
-                let imgH = (item.h * imgW) / item.w;
+                doc.setFontSize(8).setFont("helvetica", "bold");
+                doc.text(`${i + 1}. ${dataArsip[i].keterangan.toUpperCase()}`, x, y);
 
-                if (imgH > maxHeight) {
-                    imgH = maxHeight;
-                    imgW = (item.w * imgH) / item.h;
+                const imgHR = await imageToHighResBase64(dataArsip[i].foto, 2);
+
+                let w = 90;
+                let h = (dataArsip[i].h * w) / dataArsip[i].w;
+                if (h > 76) {
+                    h = 76;
+                    w = (dataArsip[i].w * h) / dataArsip[i].h;
                 }
 
-                // Gambar diletakkan persis di bawah teks label
-                doc.addImage(item.foto, 'JPEG', x, yStart + 2, imgW, imgH);
+                doc.addImage(imgHR, "JPEG", x, y + 2, w, h, undefined, "FAST");
 
-                itemsInPage++;
-                if (itemsInPage >= maxInPage && i < dataArsip.length - 1) {
+                pos++;
+                if (pos >= maxPerPage && i < dataArsip.length - 1) {
                     doc.addPage();
-                    itemsInPage = 0;
+                    pos = 0;
                 }
             }
-            doc.save(`${judul}.pdf`);
+
+            doc.save(judulLaporan.value + ".pdf");
         }
-        updatePreview();
     </script>
+
 </body>
+
 </html>
